@@ -10,9 +10,3 @@ for row in board.board:
             print(type(piece).__name__[0], end=" ")
 
     print()
-
-from piece import Rook
-
-rook = Rook("black")
-moves = rook.get_moves((4, 4))
-print(moves)
