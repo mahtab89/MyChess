@@ -27,7 +27,6 @@ class Piece:
         return moves
 
 
-"""
 class Pawn(Piece):
     def get_moves(self, board, position):
         moves = []
@@ -53,46 +52,6 @@ class Pawn(Piece):
 
         for col_dir in (-1, 1):
             new_col = col + col_dir
-            new_row = row + direction
-
-            if 0 <= new_row < 8 and 0 <= new_col < 8:
-                piece = board.board[new_row][new_col]
-
-                if piece is not None and piece.color != self.color:
-                    moves.append((new_row, new_col))
-
-        return moves"""
-
-
-class Pawn(Piece):
-    def get_moves(self, board, position):
-        moves = []
-
-        row, col = position
-
-        if self.color == "white":
-            direction = -1
-            start_row = 6
-        else:
-            direction = 1
-            start_row = 1
-
-        # One square forward
-        new_row = row + direction
-
-        if 0 <= new_row < 8 and board.board[new_row][col] is None:
-            moves.append((new_row, col))
-
-            # Two squares forward from starting position
-            if row == start_row:
-                new_row = row + (2 * direction)
-
-                if board.board[new_row][col] is None:
-                    moves.append((new_row, col))
-
-        # Captures
-        for col_direction in (-1, 1):
-            new_col = col + col_direction
             new_row = row + direction
 
             if 0 <= new_row < 8 and 0 <= new_col < 8:
