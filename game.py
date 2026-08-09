@@ -5,6 +5,7 @@ class Game:
     def __init__(self):
         self.board = Board()
         self.current_turn = "white"
+        self.move_history = []
 
     def make_move(self, start, end):
         piece = self.board.board[start[0]][start[1]]
@@ -15,10 +16,12 @@ class Game:
         if piece.color != self.current_turn:
             return False
 
-        success = self.board.move_piece(start, end)
+        move = self.board.move_piece(start, end)
 
-        if not success:
+        if move is None:
             return False
+
+        self.move_history.append(move)
 
         if self.current_turn == "white":
             self.current_turn = "black"

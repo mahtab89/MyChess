@@ -1,3 +1,4 @@
+from move import Move
 from piece import Bishop, King, Knight, Pawn, Queen, Rook
 
 
@@ -26,14 +27,16 @@ class Board:
         piece = self.board[start[0]][start[1]]
 
         if piece is None:
-            return False
+            return None
 
         possible_moves = piece.get_moves(self, start)
 
         if end not in possible_moves:
-            return False
+            return None
+
+        captured_piece = self.board[end[0]][end[1]]
 
         self.board[end[0]][end[1]] = piece
         self.board[start[0]][start[1]] = None
 
-        return True
+        return Move(start, end, captured_piece)

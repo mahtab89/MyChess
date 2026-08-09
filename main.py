@@ -19,5 +19,9 @@ print("Turn:", game.current_turn)
 game.make_move((6, 4), (4, 4))
 game.make_move((1, 4), (3, 4))
 game.make_move((7, 6), (5, 5))
+game.make_move((7, 6), (3, 5))
+
+for move in game.move_history:
+    print(move.start, "->", move.end)
 
 display_board(board)
