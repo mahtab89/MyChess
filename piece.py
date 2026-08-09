@@ -2,6 +2,9 @@ class Piece:
     def __init__(self, color):
         self.color = color
 
+    def get_moves(self, board, position):
+        raise NotImplementedError
+
     def get_sliding_moves(self, board, position, directions):
         moves = []
 
@@ -25,6 +28,9 @@ class Piece:
                 current_col += col_dir
 
         return moves
+
+    def get_attacks(self, board, position):
+        return self.get_moves(board, position)
 
 
 class Pawn(Piece):
@@ -61,6 +67,24 @@ class Pawn(Piece):
                     moves.append((new_row, new_col))
 
         return moves
+
+    def get_attacks(self, board, position):
+        attacks = []
+
+        row, col = position
+        if self.color == "white":
+            direction = -1
+        else:
+            direction = 1
+
+        for col_dir in (-1, 1):
+            new_row = row + direction
+            new_col = col + col_dir
+
+            if 0 <= new_row < 8 and 0 <= new_col < 8:
+                attacks.append((new_row, new_col))
+
+        return attacks
 
 
 class Rook(Piece):

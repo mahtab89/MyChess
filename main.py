@@ -1,27 +1,14 @@
-from game import Game
+from board import Board
+from piece import King, Knight
+from rules import Rules
 
-game = Game()
-board = game.board
+board = Board()
 
+for row in range(8):
+    for col in range(8):
+        board.board[row][col] = None
 
-def display_board(board):
-    for row in board.board:
-        for piece in row:
-            if piece is None:
-                print(".", end=" ")
-            else:
-                print(type(piece).__name__[0], end=" ")
-        print()
+board.board[4][4] = King("white")
+board.board[2][3] = Knight("black")
 
-
-print("Turn:", game.current_turn)
-
-game.make_move((6, 4), (4, 4))
-game.make_move((1, 4), (3, 4))
-game.make_move((7, 6), (5, 5))
-game.make_move((7, 6), (3, 5))
-
-for move in game.move_history:
-    print(move.start, "->", move.end)
-
-display_board(board)
+print("White in check:", Rules.is_in_check(board, "white"))
