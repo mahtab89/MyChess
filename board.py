@@ -1,5 +1,6 @@
 from move import Move
 from piece import Bishop, King, Knight, Pawn, Queen, Rook
+import piece
 
 
 class Board:
@@ -40,3 +41,9 @@ class Board:
         self.board[start[0]][start[1]] = None
 
         return Move(start, end, captured_piece)
+
+    def undo_move(self, move):
+        piece = self.board[move.end[0]][move.end[1]]
+
+        self.board[move.start[0]][move.start[1]] = piece
+        self.board[move.end[0]][move.end[1]] = move.captured_piece

@@ -1,4 +1,5 @@
 from board import Board
+from rules import Rules
 
 
 class Game:
@@ -14,6 +15,9 @@ class Game:
             return False
 
         if piece.color != self.current_turn:
+            return False
+
+        if not Rules.is_legal_move(self.board, start, end, self.current_turn):
             return False
 
         move = self.board.move_piece(start, end)

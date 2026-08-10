@@ -1,6 +1,7 @@
 from board import Board
-from piece import King, Knight
+from piece import King, Rook, Bishop
 from rules import Rules
+
 
 board = Board()
 
@@ -9,6 +10,10 @@ for row in range(8):
         board.board[row][col] = None
 
 board.board[4][4] = King("white")
-board.board[2][3] = Knight("black")
+board.board[4][3] = Bishop("white")
+board.board[4][0] = Rook("black")
 
-print("White in check:", Rules.is_in_check(board, "white"))
+
+moves = Rules.get_legal_moves(board, (4, 3), "white")
+
+print(moves)
