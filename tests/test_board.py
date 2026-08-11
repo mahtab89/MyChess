@@ -30,3 +30,16 @@ def test_undo_move():
 
     assert board.board[6][4] is not None
     assert board.board[4][4] is None
+
+
+def test_has_moved():
+    board = Board()
+    piece = board.board[6][4]
+
+    assert piece.has_moved is False
+
+    move = board.move_piece((6, 4), (4, 4))
+    assert piece.has_moved is True
+
+    board.undo_move(move)
+    assert piece.has_moved is False

@@ -124,3 +124,124 @@ def test_checkmate_not_stalemate():
 
     assert Rules.is_checkmate(board, "black") is True
     assert Rules.is_stalemate(board, "black") is False
+
+
+def setup_castling_board():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[7][7] = Rook("white")
+
+    return board
+
+
+def test_kingside_castling_available():
+    board = setup_castling_board()
+
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+    assert (7, 6) in moves
+
+
+def test_queenside_castling_available():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[7][0] = Rook("white")
+
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+    assert (7, 2) in moves
+
+
+def test_castling_not_allowed_if_king_has_moved():
+    board = setup_castling_board()
+
+    board.board[7][4].has_moved = True
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+
+    assert (7, 6) not in moves
+
+
+def test_castling_not_allowed_if_rook_has_moved():
+    board = setup_castling_board()
+
+    board.board[7][7].has_moved = True
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+
+    assert (7, 6) not in moves
+
+
+def test_castling_blocked():
+    board = setup_castling_board()
+
+    board.board[7][5] = Knight("white")
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+
+    assert (7, 6) not in moves
+
+
+def test_cannot_castle_if_in_check():
+    board = setup_castling_board()
+
+    board.board[0][4] = Rook("black")
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+
+    assert (7, 6) not in moves
+
+
+def test_cannot_castle_through_check():
+    board = setup_castling_board()
+
+    board.board[0][5] = Rook("black")
+    moves = Rules.get_castling_moves(board, (7, 6), "white")
+
+    assert (7, 6) not in moves
+
+
+def test_kingside_castling_move():
+    board = Board()
+
+    board.board[7][5] = None
+    board.board[7][6] = None
+
+    king = board.board[7][4]
+    rook = board.board[7][7]
+
+    king.has_moved = False
+    rook.has_moved = False
+
+    move = board.move_piece((7, 4), (7, 6))
+    assert move is not None
+
+    assert board.board[7][6] is king
+    assert board.board[7][4] is None
+
+    assert board.board[7][5] is rook
+    assert board.board[7][7] is None
+
+    assert king.has_moved is True
+    assert rook.has_moved is True
+
+
+def test_undo_kingside_castle():
+    board = Board()
+
+    board.board[7][5] = None
+    board.board[7][6] = None
+
+    king = board.board[7][4]
+    rook = board.board[7][7]
+
+    move = board.move_piece((7, 4), (7, 6))
+
+    board.undo_move(move)
+
+    assert board.board[7][4] is king
+    assert board.board[7][7] is rook
+
+    assert board.board[7][5] is None
+    assert board.board[7][6] is None
+
+    assert king.has_moved is False
+    assert rook.has_moved is False

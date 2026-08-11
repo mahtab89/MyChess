@@ -1,6 +1,7 @@
 class Piece:
     def __init__(self, color):
         self.color = color
+        self.has_moved = False
 
     def get_moves(self, board, position):
         raise NotImplementedError

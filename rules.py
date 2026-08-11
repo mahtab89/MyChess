@@ -13,13 +13,8 @@ class Rules:
         return None
 
     @staticmethod
-    def is_in_check(board, color):
-        king_pos = Rules.find_king(board, color)
-
-        if king_pos is None:
-            return False
-
-        enemy_color = "black" if color == "white" else "white"
+    def is_square_attacked(board, square, defending_color):
+        enemy_color = "black" if defending_color == "white" else "white"
 
         for row in range(8):
             for col in range(8):
@@ -28,10 +23,19 @@ class Rules:
                 if piece is not None and piece.color == enemy_color:
                     attacks = piece.get_attacks(board, (row, col))
 
-                    if king_pos in attacks:
+                    if square in attacks:
                         return True
 
         return False
+
+    @staticmethod
+    def is_in_check(board, color):
+        king_pos = Rules.find_king(board, color)
+
+        if king_pos is None:
+            return False
+
+        return Rules.is_square_attacked(board, king_pos, color)
 
     @staticmethod
     def is_legal_move(board, start, end, color):
@@ -43,7 +47,11 @@ class Rules:
         if piece.color != color:
             return False
 
-        if end not in piece.get_moves(board, start):
+        possible_moves = piece.get_moves(board, start)
+        if piece.__class__.__name__ == "King":
+            possible_moves += Rules.get_castling_moves(board, start, color)
+
+        if end not in possible_moves:
             return False
 
         move = board.move_piece(start, end)
@@ -68,6 +76,10 @@ class Rules:
             return []
 
         possible_moves = piece.get_moves(board, position)
+
+        if piece.__class__.__name__ == "King":
+            possible_moves += Rules.get_castling_moves(board, position, color)
+
         legal_moves = []
 
         for move in possible_moves:
@@ -109,3 +121,49 @@ class Rules:
                         return False
 
         return True
+
+    @staticmethod
+    def get_castling_moves(board, position, color):
+        moves = []
+
+        king = board.board[position[0]][position[1]]
+
+        if (
+            king is None
+            or king.__class__.__name__ != "King"
+            or king.color != color
+            or king.has_moved
+            or Rules.is_in_check(board, color)
+        ):
+            return moves
+
+        row = position[0]
+
+        # king side castling
+        rook = board.board[row][7]
+        if (
+            rook is not None
+            and rook.__class__.__name__ == "Rook"
+            and not rook.has_moved
+            and board.board[row][5] is None
+            and board.board[row][6] is None
+            and not Rules.is_square_attacked(board, (row, 5), color)
+            and not Rules.is_square_attacked(board, (row, 6), color)
+        ):
+            moves.append((row, 6))
+
+        # Queen side castling
+        rook = board.board[row][0]
+        if (
+            rook is not None
+            and rook.__class__.__name__ == "Rook"
+            and not rook.has_moved
+            and board.board[row][1] is None
+            and board.board[row][2] is None
+            and board.board[row][3] is None
+            and not Rules.is_square_attacked(board, (row, 3), color)
+            and not Rules.is_square_attacked(board, (row, 2), color)
+        ):
+            moves.append((row, 2))
+
+        return moves
