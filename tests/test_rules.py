@@ -78,7 +78,9 @@ def test_checkmate():
 
     board.board[0][0] = King("black")
     board.board[1][1] = Queen("white")
-    board.board[0][0] = King("white")
+    board.board[2][2] = King("white")
+
+    assert Rules.is_checkmate(board, "black") is True
 
 
 def test_check_not_checkmate():
