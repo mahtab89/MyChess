@@ -1,6 +1,3 @@
-import piece
-
-
 class Rules:
     @staticmethod
     def find_king(board, color):
@@ -78,3 +75,37 @@ class Rules:
                 legal_moves.append(move)
 
         return legal_moves
+
+    @staticmethod
+    def is_checkmate(board, color):
+        if not Rules.is_in_check(board, color):
+            return False
+
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+
+                if piece is not None and piece.color == color:
+                    legal_moves = Rules.get_legal_moves(board, (row, col), color)
+
+                    if legal_moves:
+                        return False
+
+        return True
+
+    @staticmethod
+    def is_stalemate(board, color):
+        if Rules.is_in_check(board, color):
+            return False
+
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+
+                if piece is not None and piece.color == color:
+                    legal_moves = Rules.get_legal_moves(board, (row, col), color)
+
+                    if legal_moves:
+                        return False
+
+        return True
