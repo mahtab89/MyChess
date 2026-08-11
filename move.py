@@ -6,6 +6,6 @@ class Move:
         self.piece_has_moved = piece_has_moved
 
         self.castling_rook = None
-        self.castling_rook_start = tuple[int, int] | None
-        self.castling_rook_end = tuple[int, int] | None
+        self.castling_rook_start: tuple[int, int] | None = None
+        self.castling_rook_end: tuple[int, int] | None = None
         self.castling_rook_has_moved = None
