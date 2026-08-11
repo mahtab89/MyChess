@@ -121,3 +121,6 @@ def test_checkmate_not_stalemate():
     board.board[0][0] = King("black")
     board.board[1][1] = Queen("white")
     board.board[2][2] = King("white")
+
+    assert Rules.is_checkmate(board, "black") is True
+    assert Rules.is_stalemate(board, "black") is False
