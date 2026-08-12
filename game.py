@@ -8,7 +8,7 @@ class Game:
         self.current_turn = "white"
         self.move_history = []
 
-    def make_move(self, start, end):
+    def make_move(self, start, end, promotion=None):
         piece = self.board.board[start[0]][start[1]]
 
         if piece is None:
@@ -17,10 +17,12 @@ class Game:
         if piece.color != self.current_turn:
             return False
 
-        if not Rules.is_legal_move(self.board, start, end, self.current_turn):
+        if not Rules.is_legal_move(
+            self.board, start, end, self.current_turn, promotion
+        ):
             return False
 
-        move = self.board.move_piece(start, end)
+        move = self.board.move_piece(start, end, promotion)
 
         if move is None:
             return False

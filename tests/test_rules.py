@@ -1,5 +1,5 @@
 from board import Board
-from piece import Bishop, King, Knight, Rook, Queen
+from piece import Bishop, King, Knight, Pawn, Rook, Queen
 from rules import Rules
 
 
@@ -245,3 +245,31 @@ def test_undo_kingside_castle():
 
     assert king.has_moved is False
     assert rook.has_moved is False
+
+
+def test_promotion_requires_choice_in_rules():
+    board = Board()
+    clear_board(board)
+
+    board.board[1][4] = Pawn("white")
+
+    assert Rules.is_legal_move(board, (1, 4), (0, 4), "white") is False
+
+
+def test_promotion_queen_is_legal():
+    board = Board()
+    clear_board(board)
+
+    board.board[1][4] = Pawn("white")
+
+    assert Rules.is_legal_move(board, (1, 4), (0, 4), "white", "queen") is True
+
+
+def test_all_promotion_choice_is_legal():
+    for promotion in ("queen", "rook", "bishop", "knight"):
+        board = Board()
+        clear_board(board)
+
+        board.board[1][4] = Pawn("white")
+
+        assert Rules.is_legal_move(board, (1, 4), (0, 4), "white", promotion) is True

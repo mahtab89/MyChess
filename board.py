@@ -23,10 +23,17 @@ class Board:
             self.board[6][col] = front_row[col]("white")
             self.board[7][col] = back_row[col]("white")
 
-    def move_piece(self, start, end):
+    def move_piece(self, start, end, promotion=None):
         piece = self.board[start[0]][start[1]]
 
         if piece is None:
+            return None
+
+        if (
+            piece.__class__.__name__ == "Pawn"
+            and end[0] in (0, 7)
+            and promotion is None
+        ):
             return None
 
         captured_piece = self.board[end[0]][end[1]]
@@ -39,6 +46,18 @@ class Board:
 
         piece.has_moved = True
 
+        # promotion move rules
+        if piece.__class__.__name__ == "Pawn" and end[0] in (0, 7):
+            promoted_piece = self.create_promoted_piece(piece.color, promotion)
+
+            if promoted_piece is not None:
+                move.promotion = promotion
+                move.promoted_piece = promoted_piece
+                move.promotion_original_piece = piece
+
+                self.board[end[0]][end[1]] = promoted_piece
+
+        # castling move rules
         is_castling = piece.__class__.__name__ == "King" and abs(end[1] - start[1]) == 2
 
         if is_castling:
@@ -73,6 +92,10 @@ class Board:
 
         piece.has_moved = move.piece_has_moved
 
+        if move.promotion is not None:
+            self.board[move.start[0]][move.start[1]] = move.promotion_original_piece
+            move.promotion_original_piece.has_moved = move.piece_has_moved
+
         if move.castling_rook is not None:
             rook = move.castling_rook
 
@@ -80,3 +103,18 @@ class Board:
             self.board[move.castling_rook_end[0]][move.castling_rook_end[1]] = None
 
             rook.has_moved = move.castling_rook_has_moved
+
+    def create_promoted_piece(self, color, promotion):
+        if promotion == "queen":
+            return Queen(color)
+
+        if promotion == "rook":
+            return Rook(color)
+
+        if promotion == "bishop":
+            return Bishop(color)
+
+        if promotion == "knight":
+            return Knight(color)
+
+        return None

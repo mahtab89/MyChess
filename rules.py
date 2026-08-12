@@ -38,7 +38,7 @@ class Rules:
         return Rules.is_square_attacked(board, king_pos, color)
 
     @staticmethod
-    def is_legal_move(board, start, end, color):
+    def is_legal_move(board, start, end, color, promotion=None):
         piece = board.board[start[0]][start[1]]
 
         if piece is None:
@@ -54,7 +54,19 @@ class Rules:
         if end not in possible_moves:
             return False
 
-        move = board.move_piece(start, end)
+        if (
+            piece.__class__.__name__ == "Pawn"
+            and end[0] in (0, 7)
+            and promotion not in ("queen", "rook", "bishop", "knight")
+        ):
+            return False
+
+        if promotion is not None and not (
+            piece.__class__.__name__ == "Pawn" and end[0] in (0, 7)
+        ):
+            return False
+
+        move = board.move_piece(start, end, promotion)
 
         if move is None:
             return False
