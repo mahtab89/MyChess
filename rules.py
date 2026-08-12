@@ -38,7 +38,7 @@ class Rules:
         return Rules.is_square_attacked(board, king_pos, color)
 
     @staticmethod
-    def is_legal_move(board, start, end, color, promotion=None):
+    def is_legal_move(board, start, end, color, promotion=None, move_history=None):
         piece = board.board[start[0]][start[1]]
 
         if piece is None:
@@ -50,6 +50,11 @@ class Rules:
         possible_moves = piece.get_moves(board, start)
         if piece.__class__.__name__ == "King":
             possible_moves += Rules.get_castling_moves(board, start, color)
+
+        if piece.__class__.__name__ == "Pawn":
+            possible_moves += Rules.get_en_passant_moves(
+                board, start, color, move_history
+            )
 
         if end not in possible_moves:
             return False
@@ -66,7 +71,7 @@ class Rules:
         ):
             return False
 
-        move = board.move_piece(start, end, promotion)
+        move = board.move_piece(start, end, promotion, move_history)
 
         if move is None:
             return False
@@ -177,5 +182,37 @@ class Rules:
             and not Rules.is_square_attacked(board, (row, 2), color)
         ):
             moves.append((row, 2))
+
+        return moves
+
+    @staticmethod
+    def get_en_passant_moves(board, position, color, move_history):
+        moves = []
+
+        if not move_history:
+            return moves
+
+        last_move = move_history[-1]
+
+        if last_move.piece is None or last_move.piece.__class__.__name__ != "Pawn":
+            return moves
+
+        if last_move.piece.color == color:
+            return moves
+
+        if abs(last_move.end[0] - last_move.start[0]) != 2:
+            return moves
+
+        if last_move.end[0] != position[0]:
+            return moves
+
+        if abs(last_move.end[1] - position[1]) != 1:
+            return moves
+
+        direction = -1 if color == "white" else 1
+
+        target = position[0] + direction, last_move.end[1]
+
+        moves.append(target)
 
         return moves

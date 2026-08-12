@@ -1,4 +1,5 @@
 from board import Board
+from move import Move
 from piece import Bishop, King, Knight, Pawn, Rook, Queen
 from rules import Rules
 
@@ -273,3 +274,60 @@ def test_all_promotion_choice_is_legal():
         board.board[1][4] = Pawn("white")
 
         assert Rules.is_legal_move(board, (1, 4), (0, 4), "white", promotion) is True
+
+
+def test_en_passant_available():
+    board = Board()
+    clear_board(board)
+
+    white_pawn = Pawn("white")
+    black_pawn = Pawn("black")
+
+    board.board[3][4] = white_pawn
+    board.board[3][3] = black_pawn
+
+    move = Move((1, 3), (3, 3), None, False)
+    move.piece = black_pawn
+
+    move_history = [move]
+    moves = Rules.get_en_passant_moves(board, (3, 4), "white", move_history)
+
+    assert (2, 3) in moves
+
+
+def test_black_en_passant_available():
+    board = Board()
+    clear_board(board)
+
+    white_pawn = Pawn("white")
+    black_pawn = Pawn("black")
+
+    board.board[4][3] = black_pawn
+    board.board[4][4] = white_pawn
+
+    move = Move((6, 4), (4, 4), None, False)
+    move.piece = white_pawn
+
+    move_history = [move]
+    moves = Rules.get_en_passant_moves(board, (4, 3), "black", move_history)
+
+    assert (5, 4) in moves
+
+
+def test_en_passant_not_available_after_other_move():
+    board = Board()
+    clear_board(board)
+
+    white_pawn = Pawn("white")
+    black_pawn = Pawn("black")
+
+    board.board[3][4] = white_pawn
+    board.board[3][3] = black_pawn
+
+    move = Move((2, 3), (3, 3), None, False)
+
+    move.piece = black_pawn
+
+    moves = Rules.get_en_passant_moves(board, (3, 4), "white", [move])
+
+    assert (2, 3) not in moves

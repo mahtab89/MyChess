@@ -18,11 +18,11 @@ class Game:
             return False
 
         if not Rules.is_legal_move(
-            self.board, start, end, self.current_turn, promotion
+            self.board, start, end, self.current_turn, promotion, self.move_history
         ):
             return False
 
-        move = self.board.move_piece(start, end, promotion)
+        move = self.board.move_piece(start, end, promotion, self.move_history)
 
         if move is None:
             return False

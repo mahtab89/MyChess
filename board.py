@@ -23,7 +23,7 @@ class Board:
             self.board[6][col] = front_row[col]("white")
             self.board[7][col] = back_row[col]("white")
 
-    def move_piece(self, start, end, promotion=None):
+    def move_piece(self, start, end, promotion=None, move_history=None):
         piece = self.board[start[0]][start[1]]
 
         if piece is None:
@@ -39,12 +39,48 @@ class Board:
         captured_piece = self.board[end[0]][end[1]]
         piece_has_moved = piece.has_moved
 
+        # en passant rules
+        is_en_passant = False
+        en_passant_captured_piece = None
+        en_passant_captured_position = None
+
+        if (
+            piece.__class__.__name__ == "Pawn"
+            and move_history
+            and captured_piece is None
+            and abs(end[1] - start[1]) == 1
+            and end[0] != start[0]
+        ):
+            last_move = move_history[-1]
+
+            if (
+                last_move.piece is not None
+                and last_move.piece.__class__.__name__ == "Pawn"
+                and abs(last_move.end[0] - last_move.start[0]) == 2
+                and last_move.end == (start[0], end[1])
+            ):
+                is_en_passant = True
+                en_passant_captured_position = last_move.end
+                en_passant_captured_piece = self.board[last_move.end[0]][
+                    last_move.end[1]
+                ]
+
         move = Move(start, end, captured_piece, piece_has_moved)
+        move.piece = piece
+
+        move.en_passant = is_en_passant
+        move.en_passant_captured_piece = en_passant_captured_piece
+        move.en_passant_captured_position = en_passant_captured_position
 
         self.board[end[0]][end[1]] = piece
         self.board[start[0]][start[1]] = None
 
         piece.has_moved = True
+
+        if is_en_passant and en_passant_captured_position is not None:
+            captured_row, captured_col = en_passant_captured_position
+
+            self.board[captured_row][captured_col] = None
 
         # promotion move rules
         if piece.__class__.__name__ == "Pawn" and end[0] in (0, 7):
@@ -103,6 +139,10 @@ class Board:
             self.board[move.castling_rook_end[0]][move.castling_rook_end[1]] = None
 
             rook.has_moved = move.castling_rook_has_moved
+
+        if move.en_passant:
+            row, col = move.en_passant_captured_position
+            self.board[row][col] = move.en_passant_captured_piece
 
     def create_promoted_piece(self, color, promotion):
         if promotion == "queen":
