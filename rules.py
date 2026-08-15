@@ -216,3 +216,49 @@ class Rules:
         moves.append(target)
 
         return moves
+
+    @staticmethod
+    def is_insufficient_material(board):
+        pieces = []
+
+        for row in range(8):
+            for col in range(8):
+                piece = board.board[row][col]
+
+                if piece is not None and piece.__class__.__name__ != "King":
+                    pieces.append(piece)
+
+        if len(pieces) == 0:
+            return True
+
+        if len(pieces) == 1:
+            return pieces[0].__class__.__name__ in ("Bishop", "Knight")
+
+        if len(pieces) == 2 and all(
+            piece.__class__.__name__ == "Bishop" for piece in pieces
+        ):
+            bishop_colors = []
+
+            for row in range(8):
+                for col in range(8):
+                    piece = board.board[row][col]
+
+                    if piece is not None and piece.__class__.__name__ == "Bishop":
+                        bishop_colors.append((row + col) % 2)
+
+            return bishop_colors[0] == bishop_colors[1]
+
+        return False
+
+    @staticmethod
+    def is_fifty_move_draw(halfmove_clock):
+        return halfmove_clock >= 100
+
+    @staticmethod
+    def is_threefold_repetition(position_history):
+        if not position_history:
+            return False
+
+        current_position = position_history[-1]
+
+        return position_history.count(current_position) >= 3

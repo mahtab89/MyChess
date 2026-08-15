@@ -331,3 +331,122 @@ def test_en_passant_not_available_after_other_move():
     moves = Rules.get_en_passant_moves(board, (3, 4), "white", [move])
 
     assert (2, 3) not in moves
+
+
+def test_king_vs_king_is_insufficient_material():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[0][4] = King("black")
+
+    assert Rules.is_insufficient_material(board) is True
+
+
+def test_king_and_bishop_vs_king_is_insufficient_material():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[7][2] = Bishop("white")
+    board.board[0][4] = King("black")
+
+    assert Rules.is_insufficient_material(board) is True
+
+
+def test_king_and_knight_vs_king_is_insufficient_material():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[7][2] = Knight("white")
+    board.board[0][4] = King("black")
+
+    assert Rules.is_insufficient_material(board) is True
+
+
+def test_king_and_rook_vs_king_is_not_insufficient_material():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[7][2] = Rook("white")
+    board.board[0][4] = King("black")
+
+    assert Rules.is_insufficient_material(board) is False
+
+
+def test_same_color_bishops_are_insufficient_material():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][2] = King("white")
+    board.board[6][3] = Bishop("white")
+
+    board.board[0][5] = King("black")
+    board.board[1][2] = Bishop("black")
+
+    assert Rules.is_insufficient_material(board) is True
+
+
+def test_opposite_color_bishops_are_not_insufficient_material():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][2] = King("white")
+    board.board[6][3] = Bishop("white")
+
+    board.board[0][5] = King("black")
+    board.board[1][3] = Bishop("black")
+
+    assert Rules.is_insufficient_material(board) is False
+
+
+def test_fifty_move_rule_not_reached():
+    assert Rules.is_fifty_move_draw(99) is False
+
+
+def test_fifty_move_rule_reached():
+    assert Rules.is_fifty_move_draw(100) is True
+
+
+def test_fifty_move_rule_above_limit():
+    assert Rules.is_fifty_move_draw(120) is True
+
+
+def test_threefold_repetition_not_reached():
+    position = ("position", "white")
+
+    history = [
+        position,
+        ("other", "black"),
+        position,
+    ]
+
+    assert Rules.is_threefold_repetition(history) is False
+
+
+def test_threefold_repetition_reached():
+    position = ("position", "white")
+
+    history = [
+        position,
+        ("other", "black"),
+        position,
+        ("another", "white"),
+        position,
+    ]
+
+    assert Rules.is_threefold_repetition(history) is True
+
+
+def test_threefold_repetition_uses_current_position():
+    position = ("position", "white")
+
+    history = [
+        ("other", "black"),
+        position,
+        ("different", "white"),
+    ]
+
+    assert Rules.is_threefold_repetition(history) is False
