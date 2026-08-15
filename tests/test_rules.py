@@ -195,7 +195,7 @@ def test_cannot_castle_through_check():
     board = setup_castling_board()
 
     board.board[0][5] = Rook("black")
-    moves = Rules.get_castling_moves(board, (7, 6), "white")
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
 
     assert (7, 6) not in moves
 
@@ -450,3 +450,64 @@ def test_threefold_repetition_uses_current_position():
     ]
 
     assert Rules.is_threefold_repetition(history) is False
+
+
+def test_get_legal_moves_includes_promotion():
+    board = Board()
+    clear_board(board)
+
+    board.board[1][4] = Pawn("white")
+
+    moves = Rules.get_legal_moves(board, (1, 4), "white")
+
+    assert (0, 4) in moves
+
+
+def test_get_legal_moves_includes_en_passant():
+    board = Board()
+    clear_board(board)
+
+    white_pawn = Pawn("white")
+    black_pawn = Pawn("black")
+
+    board.board[3][4] = white_pawn
+    board.board[3][3] = black_pawn
+
+    move = Move((1, 3), (3, 3), None, False)
+    move.piece = black_pawn
+
+    move_history = [move]
+
+    moves = Rules.get_legal_moves(board, (3, 4), "white", move_history)
+
+    assert (2, 3) in moves
+
+
+def test_cannot_castle_with_opponent_rook():
+    board = Board()
+    clear_board(board)
+
+    board.board[7][4] = King("white")
+    board.board[7][7] = Rook("black")
+
+    moves = Rules.get_castling_moves(board, (7, 4), "white")
+
+    assert (7, 6) not in moves
+
+
+def test_en_passant_not_available_with_same_color_pawn():
+    board = Board()
+    clear_board(board)
+
+    white_pawn = Pawn("white")
+    another_white_pawn = Pawn("white")
+
+    board.board[3][4] = white_pawn
+    board.board[3][3] = another_white_pawn
+
+    last_move = Move((1, 3), (3, 3), None, False)
+    last_move.piece = another_white_pawn
+
+    moves = Rules.get_en_passant_moves(board, (3, 4), "white", [last_move])
+
+    assert (2, 3) not in moves

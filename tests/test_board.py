@@ -88,7 +88,9 @@ def test_promotion_requires_choices():
 
     for row in range(8):
         for col in range(8):
-            board.board[row][col] = Pawn("white")
+            board.board[row][col] = None
+
+    board.board[1][4] = Pawn("white")
 
     move = board.move_piece((1, 4), (0, 4))
 

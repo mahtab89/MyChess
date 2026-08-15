@@ -56,6 +56,7 @@ class Board:
             if (
                 last_move.piece is not None
                 and last_move.piece.__class__.__name__ == "Pawn"
+                and last_move.piece.color != piece.color
                 and abs(last_move.end[0] - last_move.start[0]) == 2
                 and last_move.end == (start[0], end[1])
             ):
@@ -140,7 +141,7 @@ class Board:
 
             rook.has_moved = move.castling_rook_has_moved
 
-        if move.en_passant:
+        if move.en_passant and move.en_passant_captured_position is not None:
             row, col = move.en_passant_captured_position
             self.board[row][col] = move.en_passant_captured_piece
 

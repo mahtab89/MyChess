@@ -83,7 +83,7 @@ class Rules:
         return not in_check
 
     @staticmethod
-    def get_legal_moves(board, position, color):
+    def get_legal_moves(board, position, color, move_history=None):
         piece = board.board[position[0]][position[1]]
 
         if piece is None:
@@ -97,16 +97,40 @@ class Rules:
         if piece.__class__.__name__ == "King":
             possible_moves += Rules.get_castling_moves(board, position, color)
 
+        if piece.__class__.__name__ == "Pawn":
+            possible_moves += Rules.get_en_passant_moves(
+                board, position, color, move_history
+            )
+
         legal_moves = []
 
         for move in possible_moves:
-            if Rules.is_legal_move(board, position, move, color):
-                legal_moves.append(move)
+            if piece.__class__.__name__ == "Pawn" and move[0] in (0, 7):
+                promotions = (
+                    "queen",
+                    "rook",
+                    "bishop",
+                    "knight",
+                )
+
+                if any(
+                    Rules.is_legal_move(
+                        board, position, move, color, promotion, move_history
+                    )
+                    for promotion in promotions
+                ):
+                    legal_moves.append(move)
+
+            else:
+                if Rules.is_legal_move(
+                    board, position, move, color, move_history=move_history
+                ):
+                    legal_moves.append(move)
 
         return legal_moves
 
     @staticmethod
-    def is_checkmate(board, color):
+    def is_checkmate(board, color, move_history=None):
         if not Rules.is_in_check(board, color):
             return False
 
@@ -115,7 +139,9 @@ class Rules:
                 piece = board.board[row][col]
 
                 if piece is not None and piece.color == color:
-                    legal_moves = Rules.get_legal_moves(board, (row, col), color)
+                    legal_moves = Rules.get_legal_moves(
+                        board, (row, col), color, move_history
+                    )
 
                     if legal_moves:
                         return False
@@ -123,7 +149,7 @@ class Rules:
         return True
 
     @staticmethod
-    def is_stalemate(board, color):
+    def is_stalemate(board, color, move_history=None):
         if Rules.is_in_check(board, color):
             return False
 
@@ -132,7 +158,9 @@ class Rules:
                 piece = board.board[row][col]
 
                 if piece is not None and piece.color == color:
-                    legal_moves = Rules.get_legal_moves(board, (row, col), color)
+                    legal_moves = Rules.get_legal_moves(
+                        board, (row, col), color, move_history
+                    )
 
                     if legal_moves:
                         return False
@@ -162,6 +190,7 @@ class Rules:
             rook is not None
             and rook.__class__.__name__ == "Rook"
             and not rook.has_moved
+            and rook.color == color
             and board.board[row][5] is None
             and board.board[row][6] is None
             and not Rules.is_square_attacked(board, (row, 5), color)
@@ -174,6 +203,7 @@ class Rules:
         if (
             rook is not None
             and rook.__class__.__name__ == "Rook"
+            and rook.color == color
             and not rook.has_moved
             and board.board[row][1] is None
             and board.board[row][2] is None

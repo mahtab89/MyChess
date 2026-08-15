@@ -1,5 +1,5 @@
 from game import Game
-from piece import Pawn, Queen, Rook
+from piece import King, Pawn, Queen, Rook
 
 
 def test_kingside_castling_through_game():
@@ -144,3 +144,79 @@ def test_position_history_tracks_positions():
 
     assert len(game.position_history) == 5
     assert game.position_history[-1] == initial_position
+
+
+def test_game_status_playing():
+    game = Game()
+
+    assert game.get_game_status() == "playing"
+
+
+def test_game_status_insufficient_material():
+    game = Game()
+
+    for row in range(8):
+        for col in range(8):
+            game.board.board[row][col] = None
+
+    game.board.board[7][4] = King("white")
+    game.board.board[0][4] = King("black")
+
+    assert game.get_game_status() == "draw_insufficient_material"
+
+
+def test_game_status_fifty_move_draw():
+    game = Game()
+
+    game.halfmove_clock = 100
+
+    assert game.get_game_status() == "draw_fifty_move"
+
+
+def test_game_status_threefold_draw():
+    game = Game()
+
+    position = game.get_position_key()
+
+    game.position_history = [
+        position,
+        ("other", "black"),
+        position,
+        ("another", "white"),
+        position,
+    ]
+
+    assert game.get_game_status() == "draw_threefold"
+
+
+def test_game_status_checkmate():
+    game = Game()
+    board = game.board
+    for row in range(8):
+        for col in range(8):
+            board.board[row][col] = None
+
+    board.board[0][0] = King("black")
+    board.board[1][1] = Queen("white")
+    board.board[2][2] = King("white")
+
+    game.current_turn = "black"
+
+    assert game.get_game_status() == "checkmate_white"
+
+
+def test_game_status_stalemate():
+    game = Game()
+
+    board = game.board
+    for row in range(8):
+        for col in range(8):
+            board.board[row][col] = None
+
+    board.board[0][0] = King("black")
+    board.board[1][2] = Queen("white")
+    board.board[2][2] = King("white")
+
+    game.current_turn = "black"
+
+    assert game.get_game_status() == "stalemate"

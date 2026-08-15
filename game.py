@@ -120,3 +120,24 @@ class Game:
             and rook.color == color
             and not rook.has_moved
         )
+
+    def get_game_status(self):
+        color = self.current_turn
+
+        if Rules.is_checkmate(self.board, color, self.move_history):
+            winner = "black" if color == "white" else "white"
+            return f"checkmate_{winner}"
+
+        if Rules.is_stalemate(self.board, color, self.move_history):
+            return "stalemate"
+
+        if Rules.is_insufficient_material(self.board):
+            return "draw_insufficient_material"
+
+        if Rules.is_fifty_move_draw(self.halfmove_clock):
+            return "draw_fifty_move"
+
+        if Rules.is_threefold_repetition(self.position_history):
+            return "draw_threefold"
+
+        return "playing"
