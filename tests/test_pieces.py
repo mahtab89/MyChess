@@ -1,5 +1,5 @@
-from board import Board
-from piece import Bishop, King, Knight, Pawn, Queen, Rook
+from engine.board import Board
+from engine.piece import Bishop, King, Knight, Pawn, Queen, Rook
 
 
 def test_pawn():

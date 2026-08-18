@@ -1,5 +1,5 @@
-from move import Move
-from piece import Bishop, King, Knight, Pawn, Queen, Rook
+from .move import Move
+from .piece import Bishop, King, Knight, Pawn, Queen, Rook
 
 
 class Board:

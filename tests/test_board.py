@@ -1,6 +1,6 @@
-from board import Board
-from piece import Bishop, Knight, Pawn, Queen, Rook
-from move import Move
+from engine.piece import Bishop, Knight, Pawn, Queen, Rook
+from engine.board import Board
+from engine.move import Move
 
 
 def test_board_initial_pos():

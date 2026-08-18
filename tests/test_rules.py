@@ -1,7 +1,7 @@
-from board import Board
-from move import Move
-from piece import Bishop, King, Knight, Pawn, Rook, Queen
-from rules import Rules
+from engine.board import Board
+from engine.move import Move
+from engine.piece import Bishop, King, Knight, Pawn, Rook, Queen
+from engine.rules import Rules
 
 
 def clear_board(board):

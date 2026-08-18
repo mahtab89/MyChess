@@ -1,19 +1,39 @@
-from board import Board
-from piece import King, Rook, Bishop
-from rules import Rules
+import pygame
 
+pygame.init()
 
-board = Board()
+WIDTH = 800
+HEIGHT = 800
+SQUARE_SIZE = WIDTH // 8
 
-for row in range(8):
-    for col in range(8):
-        board.board[row][col] = None
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("MyChess")
 
-board.board[4][4] = King("white")
-board.board[4][3] = Bishop("white")
-board.board[4][0] = Rook("black")
+running = True
 
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-moves = Rules.get_legal_moves(board, (4, 3), "white")
+    for row in range(8):
+        for col in range(8):
+            if (row + col) % 2 == 0:
+                color = (240, 217, 181)
+            else:
+                color = (181, 136, 99)
 
-print(moves)
+            pygame.draw.rect(
+                screen,
+                color,
+                (
+                    col * SQUARE_SIZE,
+                    row * SQUARE_SIZE,
+                    SQUARE_SIZE,
+                    SQUARE_SIZE,
+                ),
+            )
+
+    pygame.display.flip()
+
+pygame.quit()

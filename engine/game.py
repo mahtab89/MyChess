@@ -1,5 +1,5 @@
-from board import Board
-from rules import Rules
+from .board import Board
+from .rules import Rules
 
 
 class Game:

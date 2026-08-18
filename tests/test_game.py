@@ -1,5 +1,5 @@
-from game import Game
-from piece import King, Pawn, Queen, Rook
+from engine.game import Game
+from engine.piece import King, Pawn, Queen, Rook
 
 
 def test_kingside_castling_through_game():
