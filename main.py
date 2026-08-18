@@ -1,13 +1,30 @@
 import pygame
 
+from ui.board_renderer import BoardRenderer
+from ui.themes import THEMES
+from ui.layout import (
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+    PLAYER_TOP_RECT,
+    BOARD_RECT,
+    PLAYER_BOTTOM_RECT,
+    SIDEBAR_RECT,
+)
+
+
 pygame.init()
 
-WIDTH = 800
-HEIGHT = 800
-SQUARE_SIZE = WIDTH // 8
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("MyChess")
+
+theme = THEMES["catppuccin"]
+
+board_renderer = BoardRenderer(
+    screen,
+    theme,
+    BOARD_RECT,
+)
 
 running = True
 
@@ -16,23 +33,28 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    for row in range(8):
-        for col in range(8):
-            if (row + col) % 2 == 0:
-                color = (240, 217, 181)
-            else:
-                color = (181, 136, 99)
+    screen.fill(theme["background"])
 
-            pygame.draw.rect(
-                screen,
-                color,
-                (
-                    col * SQUARE_SIZE,
-                    row * SQUARE_SIZE,
-                    SQUARE_SIZE,
-                    SQUARE_SIZE,
-                ),
-            )
+    # Temporary UI areas
+    pygame.draw.rect(
+        screen,
+        theme["background"],
+        PLAYER_TOP_RECT,
+    )
+
+    pygame.draw.rect(
+        screen,
+        theme["background"],
+        PLAYER_BOTTOM_RECT,
+    )
+
+    pygame.draw.rect(
+        screen,
+        theme["background"],
+        SIDEBAR_RECT,
+    )
+
+    board_renderer.draw_board()
 
     pygame.display.flip()
 
