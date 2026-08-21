@@ -12,6 +12,7 @@ from ui.layout import (
 )
 from ui.player_panel import PlayerPanel
 from ui.piece_renderer import PieceRenderer
+from ui.sidebar import Sidebar
 
 pygame.init()
 
@@ -46,6 +47,12 @@ white_panel = PlayerPanel(
 piece_renderer = PieceRenderer(
     screen,
     BOARD_RECT,
+)
+
+sidebar = Sidebar(
+    screen,
+    SIDEBAR_RECT,
+    theme,
 )
 
 running = True
@@ -86,7 +93,10 @@ while running:
     )
 
     board_renderer.draw_board()
+    
     piece_renderer.draw(game.board)
+
+    sidebar.draw(game.current_turn)
 
     pygame.display.flip()
 

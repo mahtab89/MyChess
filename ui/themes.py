@@ -3,9 +3,13 @@ THEMES = {
         "light_square": (166, 173, 200),
         "dark_square": (76, 79, 105),
         "background": (30, 30, 46),
+
         "text": (205, 214, 244),
         "text_secondary": (166, 173, 200),
+
         "panel": (49, 50, 68),
+        "button": (69, 71, 94),
+
         "active": (166, 227, 161),
         "inactive": (108, 112, 134),
     },
@@ -13,9 +17,13 @@ THEMES = {
         "light_square": (169, 177, 214),
         "dark_square": (61, 66, 90),
         "background": (26, 27, 38),
+        
         "text": (192, 202, 245),
         "text_secondary": (169, 177, 214),
+        
         "panel": (49, 50, 68),
+        "button": (69, 71, 94),
+
         "active": (166, 227, 161),
         "inactive": (108, 112, 134),
     },
@@ -23,9 +31,13 @@ THEMES = {
         "light_square": (240, 217, 181),
         "dark_square": (181, 136, 99),
         "background": (49, 46, 43),
+        
         "text": (255, 255, 255),
         "text_secondary": (200, 200, 200),
+        
         "panel": (49, 50, 68),
+        "button": (69, 71, 94),
+
         "active": (166, 227, 161),
         "inactive": (108, 112, 134),
     },
