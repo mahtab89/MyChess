@@ -13,6 +13,7 @@ from ui.layout import (
 from ui.player_panel import PlayerPanel
 from ui.piece_renderer import PieceRenderer
 from ui.sidebar import Sidebar
+from ui.input_handler import InputHandler
 
 pygame.init()
 
@@ -55,12 +56,21 @@ sidebar = Sidebar(
     theme,
 )
 
+input_handler = InputHandler(
+    game,
+    BOARD_RECT,
+)
+
 running = True
 
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                input_handler.handle_click(event.pos)
 
     screen.fill(theme["background"])
 
@@ -93,10 +103,14 @@ while running:
     )
 
     board_renderer.draw_board()
+    board_renderer.draw_highlights(
+        input_handler.selected_position, 
+        input_handler.legal_moves
+    )
     
     piece_renderer.draw(game.board)
 
-    sidebar.draw(game.current_turn)
+    sidebar.draw(game.current_turn,game.move_history)
 
     pygame.display.flip()
 

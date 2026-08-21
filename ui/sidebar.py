@@ -1,4 +1,5 @@
 import pygame
+from ui.move_history import MoveHistory
 
 
 class Sidebar:
@@ -40,6 +41,12 @@ class Sidebar:
             - (self.gap * 2),
         )
 
+        self.move_history = MoveHistory(
+            screen,
+            self.history_rect,
+            theme,
+        )
+
     def draw_panel(self, rect):
         pygame.draw.rect(
             self.screen,
@@ -63,7 +70,13 @@ class Sidebar:
             ),
         )
 
-    def draw(self, current_turn="white"):
+    def draw(self, current_turn="white", move_history=None):
+
+        if move_history is None:
+            move_history = []
+        
+        self.move_history.draw(move_history)
+        
         self.draw_panel(self.controls_rect)
         self.draw_panel(self.history_rect)
         self.draw_panel(self.status_rect)
@@ -111,19 +124,7 @@ class Sidebar:
         # Move history
         self.draw_title("Move History", self.history_rect)
 
-        history_surface = self.small_font.render(
-            "No moves yet",
-            True,
-            self.theme["text_secondary"],
-        )
-
-        self.screen.blit(
-            history_surface,
-            (
-                self.history_rect.x + self.padding,
-                self.history_rect.y + 55,
-            ),
-        )
+        self.move_history.draw(move_history)
 
         # Status
         self.draw_title("Status", self.status_rect)
